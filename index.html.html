@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Plastic Journey - Guaranteed Final Edition</title>
+    <style>
+        /* --- Basic Setup & Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --water-blue: #3498db;
+            --dark-text: #333;
+            --light-text: #fff;
+            --yellow-bin-color: #f1c40f;
+            --green-bin-color: #27ae60;
+            --success-green: #2ecc71;
+            --danger-red: #e74c3c;
+            --background-light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: var(--dark-text);
+            overflow-x: hidden;
+            background-color: var(--background-light);
+        }
+
+        /* --- Section Styling --- */
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            text-align: center;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .section h1 { font-size: 3rem; font-weight: 700; margin-bottom: 10px; }
+        .section h2 { font-size: 2.2rem; font-weight: 600; }
+        .section p { font-size: 1.2rem; max-width: 800px; line-height: 1.6; }
+
+        /* --- Part 1: Waterfall --- */
+        #waterfall-section { background: linear-gradient(180deg, var(--water-blue) 0%, #85c1e9 100%); color: var(--light-text); }
+        #plastic-counter-container { background: rgba(0, 0, 0, 0.2); padding: 15px 30px; border-radius: 10px; margin-top: 20px; }
+        #plastic-counter { font-size: 2.5rem; font-weight: 700; }
+        .plastic-item { position: absolute; top: -50px; width: 30px; height: 30px; background-image: url('https://img.icons8.com/ios-filled/50/ffffff/plastic.png'); background-size: contain; opacity: 0.7; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh); } }
+
+        /* --- Part 2 & 3: Bins & Consequences --- */
+        #choice-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #draggable-bottle {
+            width: 80px; height: 80px; cursor: grab; z-index: 100;
+            background-image: url('https://img.icons8.com/ios-filled/100/3498db/plastic.png');
+            background-size: contain; margin-top: 30px;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        #bin-container { display: flex; gap: 60px; margin-top: 40px; }
+        .bin {
+            width: 150px; height: 190px; position: relative;
+            background-color: var(--bin-color, #ccc);
+            border-radius: 8px 8px 3px 3px;
+            box-shadow: inset -5px 0px 15px rgba(0,0,0,0.2);
+        }
+        .bin .lid {
+            width: 170px; height: 25px; background-color: var(--bin-color, #ccc);
+            position: absolute; top: -15px; left: -10px;
+            border-radius: 10px 10px 5px 5px; transform-origin: top right;
+            transition: transform 0.4s ease; z-index: 10;
+            border-bottom: 5px solid rgba(0,0,0,0.2); box-sizing: border-box;
+        }
+        .bin.drag-over .lid { transform: rotate(-80deg) translateX(10px); }
+        .bin-label {
+            color: white; font-weight: 600; z-index: 5;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        }
+        .bin::after { content: ''; position: absolute; width: 30px; height: 30px; background: #2c3e50; border: 4px solid #7f8c8d; border-radius: 50%; bottom: -15px; left: 10px; }
+        .bin::before { content: ''; position: absolute; width: 80px; height: 15px; background: #2c3e50; border-radius: 5px; top: 5px; right: -20px; transform: rotate(90deg); }
+        #yellow-bin { --bin-color: var(--yellow-bin-color); }
+        #green-bin { --bin-color: var(--green-bin-color); }
+
+        .consequence-animation { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; flex-direction: column; justify-content: center; align-items: center; }
+        #landfill-animation { background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1599394011386-a38f37559146?ixlib=rb-4.0.3&q=80&w=1080&auto=format&fit=crop) center/cover; color: white; }
+        #landfill-animation .bottle-pile { width: 100px; height: 100px; background-image: url('https://img.icons8.com/ios-filled/100/cccccc/plastic.png'); animation: pile-up 1s forwards; }
+        @keyframes pile-up { from { transform: scale(0.1) translateY(-200px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        #recycling-animation { background: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url(https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?ixlib=rb-4.0.3&q=80&w=1080&auto=format&fit=crop) center/cover; }
+        .conveyor-belt { width: 80%; height: 20px; background-color: #555; position: relative; border-radius: 10px; overflow: hidden; }
+        .conveyor-bottle { width: 50px; height: 50px; background-image: url('https://img.icons8.com/ios-filled/50/27ae60/plastic.png'); position: absolute; top: -40px; animation: conveyor-move 4s linear forwards; }
+        @keyframes conveyor-move { 0% { left: -10%; } 40% { left: 50%; } 100% { left: 110%; transform: rotate(360deg) scale(0); } }
+        .reset-button { margin-top: 30px; padding: 10px 20px; font-weight: 600; cursor: pointer; border: 2px solid white; color: white; background-color: transparent; border-radius: 50px; transition: background-color 0.3s, color 0.3s; }
+        .reset-button:hover { background-color: white; color: var(--dark-text); }
+        #recycling-animation .reset-button { border-color: var(--dark-text); color: var(--dark-text); }
+        #recycling-animation .reset-button:hover { background-color: var(--dark-text); color: white; }
+
+        /* --- Part 4: Solutions --- */
+        #solutions-section { background-color: #d5f5e3; }
+        #solutions-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 40px; }
+        .solution-card { background: white; padding: 20px; border-radius: 15px; width: 220px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .solution-card:hover { transform: translateY(-10px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .solution-card img { width: 80px; height: 80px; margin-bottom: 15px; }
+        .solution-card svg { /* For the embedded SVG */
+            width: 80px; height: 80px; margin-bottom: 15px;
+        }
+        .solution-card h3 { margin: 0 0 10px 0; font-size: 1.2rem; }
+        .solution-card p { font-size: 0.95rem; line-height: 1.4; display: none; }
+        .solution-card.active p { display: block; }
+
+        /* --- Part 5: Checklist Pledge --- */
+        #pledge-section { background-color: #eaf2f8; }
+        #pledge-form { display: flex; flex-direction: column; align-items: stretch; gap: 15px; margin-top: 30px; width: 100%; max-width: 500px; }
+        .pledge-item { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s ease; }
+        .pledge-item:hover { transform: scale(1.03); }
+        .pledge-item label { display: flex; align-items: center; font-size: 1.1rem; font-weight: 500; cursor: pointer; }
+        .pledge-item input[type="checkbox"] { width: 20px; height: 20px; margin-right: 15px; accent-color: var(--success-green); }
+        #submit-pledge { background-color: var(--success-green); color: white; border: none; padding: 15px 30px; font-size: 1.2rem; font-weight: 600; border-radius: 50px; cursor: pointer; transition: background-color 0.3s, transform 0.2s; margin-top: 20px; }
+        #submit-pledge:hover { background-color: #27ae60; transform: scale(1.05); }
+        #pledge-thanks { display: none; font-size: 1.5rem; color: var(--success-green); }
+    </style>
+</head>
+<body>
+
+    <section id="waterfall-section" class="section">
+        <h1>Every choice has a ripple effect.</h1>
+        <p>Scroll down to see the scale of plastic production in real time.</p>
+        <div id="plastic-counter-container"><span id="plastic-counter">0</span> tons of plastic produced...</div>
+    </section>
+
+    <section id="choice-section" class="section">
+        <div id="choice-content">
+            <h2>This is your bottle.</h2>
+            <p>What do you do next? Drag it to a bin to see the consequence.</p>
+            <div id="draggable-bottle" draggable="true"></div>
+            <div id="bin-container">
+                <div id="green-bin" class="bin"><div class="lid"></div><div class="bin-label">General Waste</div></div>
+                <div id="yellow-bin" class="bin"><div class="lid"></div><div class="bin-label">Recycling</div></div>
+            </div>
+        </div>
+        <div id="landfill-animation" class="consequence-animation">
+            <h2>Lost to the landfill.</h2>
+            <p>This bottle will now sit here for over 450 years.</p>
+            <div class="bottle-pile"></div>
+            <button class="reset-button">Try the other option</button>
+        </div>
+        <div id="recycling-animation" class="consequence-animation">
+            <h2>A new life begins!</h2>
+            <p>The bottle is processed, saving energy and resources.</p>
+            <div class="conveyor-belt"><div class="conveyor-bottle"></div></div>
+            <button class="reset-button">Try the other option</button>
+        </div>
+    </section>
+
+    <section id="solutions-section" class="section">
+        <h2>The best action is taken <em>before</em> you reach the bin.</h2>
+        <p>Click an item to see the real impact of reducing your plastic use.</p>
+        <div id="solutions-container">
+            <div class="solution-card" data-stat="You can save an average of <strong>156 plastic bottles</strong> from polluting the planet each year."><img src="https://img.icons8.com/ios/100/2ecc71/water-bottle.png" alt="Reusable Bottle"/><h3>Reusable Bottle</h3><p></p></div>
+            <div class="solution-card" data-stat="Using your own bags can prevent over <strong>300 plastic bags</strong> per person from entering the environment every year."><img src="https://img.icons8.com/ios/100/2ecc71/shopping-bag.png" alt="Shopping Bag"/><h3>Shopping Bag</h3><p></p></div>
+            <div class="solution-card" data-stat="Most single-use coffee cups contain a plastic lining and are not recyclable. This simple switch avoids daily waste."><img src="https://img.icons8.com/ios/100/2ecc71/coffee-to-go.png" alt="Reusable Cup"/><h3>Reusable Cup</h3><p></p></div>
+            <div class="solution-card" data-stat="In the U.S. alone, <strong>500 million plastic straws</strong> are used every single day. Choosing a reusable option prevents adding to this massive number.">
+                <!-- EMBEDDED SVG ICON (GUARANTEED TO WORK) -->
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="none" stroke="#2ecc71" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10,90 L90,10" />
+                        <path d="M60,10 C68,10 75,17 75,25" />
+                    </g>
+                </svg>
+                <h3>Reusable Straw</h3><p></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="pledge-section" class="section">
+        <h2>Small habits lead to big changes.</h2>
+        <p>Select the steps you will take, then make your pledge!</p>
+        <div id="pledge-form">
+            <div class="pledge-item"><label><input type="checkbox" name="pledge">I will use a reusable bottle</label></div>
+            <div class="pledge-item"><label><input type="checkbox" name="pledge">I will carry my own shopping bag</label></div>
+            <div class="pledge-item"><label><input type="checkbox" name="pledge">I will use a reusable coffee cup</label></div>
+            <div class="pledge-item"><label><input type="checkbox" name="pledge">I will refuse single-use straws</label></div>
+            <button id="submit-pledge">Make My Pledge</button>
+        </div>
+        <h3 id="pledge-thanks">Thank you for making a difference!</h3>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const counterElement = document.getElementById('plastic-counter');
+            let plasticTons = 0; const tonsPerSecond = 13.6;
+            setInterval(() => { plasticTons += tonsPerSecond / 10; counterElement.textContent = Math.floor(plasticTons).toLocaleString(); }, 100);
+            const waterfallSection = document.getElementById('waterfall-section');
+            setInterval(() => {
+                const plastic = document.createElement('div');
+                plastic.classList.add('plastic-item');
+                plastic.style.left = `${Math.random() * 100}vw`; plastic.style.animationDuration = `${Math.random() * 3 + 4}s`;
+                waterfallSection.appendChild(plastic);
+                setTimeout(() => plastic.remove(), 7000);
+            }, 200);
+
+            const bottle = document.getElementById('draggable-bottle');
+            const choiceContent = document.getElementById('choice-content');
+            const landfillAnimation = document.getElementById('landfill-animation');
+            const recyclingAnimation = document.getElementById('recycling-animation');
+            
+            function resetChoice() {
+                landfillAnimation.style.display = 'none';
+                recyclingAnimation.style.display = 'none';
+                choiceContent.style.display = 'flex';
+                bottle.style.transition = 'transform 0s, opacity 0s';
+                bottle.style.transform = 'translateY(0) scale(1)';
+                bottle.style.opacity = '1';
+            }
+
+            bottle.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', 'bottle'); setTimeout(() => bottle.style.opacity = '0.5', 0); });
+            bottle.addEventListener('dragend', () => bottle.style.opacity = '1');
+
+            document.querySelectorAll('.bin').forEach(bin => {
+                bin.addEventListener('dragover', e => { e.preventDefault(); bin.classList.add('drag-over'); });
+                bin.addEventListener('dragleave', () => bin.classList.remove('drag-over'));
+                bin.addEventListener('drop', e => {
+                    e.preventDefault();
+                    bin.classList.remove('drag-over');
+                    choiceContent.style.display = 'none';
+                    bottle.style.transition = 'transform 0.5s ease-in, opacity 0.5s ease-in';
+                    bottle.style.transform = 'translateY(80px) scale(0.3)';
+                    bottle.style.opacity = '0';
+                    setTimeout(() => {
+                        if (bin.id === 'yellow-bin') {
+                            recyclingAnimation.style.display = 'flex';
+                        } else {
+                            landfillAnimation.style.display = 'flex';
+                        }
+                    }, 500);
+                });
+            });
+
+            document.querySelectorAll('.reset-button').forEach(button => button.addEventListener('click', resetChoice));
+
+            document.querySelectorAll('.solution-card').forEach(card => {
+                card.querySelector('p').innerHTML = card.getAttribute('data-stat');
+                card.addEventListener('click', () => card.classList.toggle('active'));
+            });
+
+            document.getElementById('submit-pledge').addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('pledge-form').style.display = 'none';
+                document.getElementById('pledge-thanks').style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
